@@ -32,9 +32,21 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+import os
+from pathlib import Path
+
 @st.cache_resource
 def load_model():
-    df = pd.read_csv("StudentsPerformance.csv")
+    # تحديد مسار الملف بدقة سواء كان داخل المجلد الرئيسي أو بجانب مجلد pages
+    current_dir = Path(__file__).resolve().parent  # مجلد pages
+    parent_dir = current_dir.parent                # المجلد الرئيسي للبروجكت
+    
+    # البحث عن الملف في المجلد الرئيسي أو الحالي
+    csv_path = parent_dir / "StudentsPerformance.csv"
+    if not csv_path.exists():
+        csv_path = current_dir / "StudentsPerformance.csv"
+        
+    df = pd.read_csv(csv_path)
     df.drop(columns=["parental level of education", "lunch"], inplace=True)
 
     le_gender = LabelEncoder()
@@ -54,32 +66,3 @@ def load_model():
     model.fit(X_train, y_train)
 
     return model, le_gender, le_race, le_prep, df
-
-model, le_gender, le_race, le_prep, df = load_model()
-
-st.markdown('<div class="app-title">🏆 Writing Score Prediction</div>', unsafe_allow_html=True)
-
-col_left, col_right = st.columns(2)
-
-with col_left:
-    gender = st.selectbox("Gender:", sorted(df["gender"].unique().tolist()))
-    race = st.selectbox("Race/Ethnicity:", sorted(df["race/ethnicity"].unique().tolist()))
-    prep = st.selectbox("Test Preparation Course:", sorted(df["test preparation course"].unique().tolist()))
-
-with col_right:
-    math_score    = st.slider("Math Score:", 0, 100, 70)
-    reading_score = st.slider("Reading Score:", 0, 100, 75)
-
-if st.button("Predict Writing Score 🚀", use_container_width=True):
-    g_enc = le_gender.transform([gender])[0]
-    r_enc = le_race.transform([race])[0]
-    p_enc = le_prep.transform([prep])[0]
-
-    features = np.array([[g_enc, r_enc, p_enc, math_score, reading_score]])
-    prediction = model.predict(features)[0]
-    prediction = max(0, min(100, prediction))
-
-    st.markdown(
-        f'<div class="result-box">Predicted Writing Score: {prediction:.1f}</div>',
-        unsafe_allow_html=True
-    )
