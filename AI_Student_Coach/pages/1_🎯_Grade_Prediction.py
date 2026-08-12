@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+import os
+from pathlib import Path
 
 st.set_page_config(page_title="Grade Prediction", page_icon="🎯", layout="wide")
 
@@ -31,9 +33,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-import os
-from pathlib import Path
 
 @st.cache_resource
 def load_model():
@@ -66,7 +65,7 @@ def load_model():
     model.fit(X_train, y_train)
 
     return model, le_gender, le_race, le_prep, df
-
+    
 model, le_gender, le_race, le_prep, df = load_model()
 
 st.markdown('<div class="app-title">🏆 Writing Score Prediction</div>', unsafe_allow_html=True)
