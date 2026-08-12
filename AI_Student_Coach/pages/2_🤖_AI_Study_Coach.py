@@ -17,26 +17,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-with st.sidebar:
-    st.subheader('Learning Style:')
-    learning_style = st.selectbox("", ["Visual", "Hands-on", "Reading/Writing", "Auditory"], label_visibility="collapsed")
+st.markdown('<div class="chat-header">🤖 AI Study Coach</div>', unsafe_allow_html=True)
 
-    st.divider()
-    st.subheader('Response Details:')
+# توزيع عناصر التعديل بالعرض في 4 أعمدة
+st.subheader("⚙️ Customization Settings")
+setting_col1, setting_col2, setting_col3, setting_col4 = st.columns(4)
+
+with setting_col1:
+    learning_style = st.selectbox("Learning Style:", ["Hands-on", "Visual", "Reading/Writing", "Auditory"])
+
+with setting_col2:
     detail_level = st.select_slider(
-        "", options=["Brief", "Medium-detailed", "Very detailed"], value="Medium-detailed",
-        label_visibility="collapsed"
+        "Response Details:", options=["Brief", "Medium-detailed", "Very detailed"], value="Medium-detailed"
     )
 
-    st.divider()
-    st.subheader('Student Level:')
-    student_level = st.radio("", ["Beginner", "Intermediate", "Advanced"], label_visibility="collapsed")
+with setting_col3:
+    student_level = st.selectbox("Student Level:", ["Beginner", "Intermediate", "Advanced"])
 
-    st.divider()
-    api_key = st.text_input("Enter Gemini API Key:", type="password")
+with setting_col4:
+    api_key = st.text_input("Gemini API Key:", type="password", placeholder="Paste API Key...")
 
-st.markdown('<div class="chat-header">🤖 AI Study Coach</div>', unsafe_allow_html=True)
-st.caption("Ask me anything about studying...")
+st.divider()
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -49,7 +50,7 @@ user_query = st.chat_input("Ask me anything about studying...")
 
 if user_query:
     if not api_key:
-        st.warning("⚠️ Please enter your Gemini API Key in the sidebar to proceed.")
+        st.warning("⚠️ Please enter your Gemini API Key in the settings above.")
     else:
         st.session_state.messages.append({"role": "user", "content": user_query})
         with st.chat_message("user"):

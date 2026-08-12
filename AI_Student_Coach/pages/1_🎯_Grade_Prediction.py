@@ -69,15 +69,22 @@ model, le_gender, le_race, le_prep, df = load_model()
 
 st.markdown('<div class="app-title">🏆 Writing Score Prediction</div>', unsafe_allow_html=True)
 
-col_left, col_right = st.columns(2)
+# عناصر إدخال البيانات موزع بالعرض في 5 أعمدة
+c1, c2, c3, c4, c5 = st.columns(5)
 
-with col_left:
+with c1:
     gender = st.selectbox("Gender:", sorted(df["gender"].unique().tolist()))
-    race = st.selectbox("Race/Ethnicity:", sorted(df["race/ethnicity"].unique().tolist()))
-    prep = st.selectbox("Test Preparation Course:", sorted(df["test preparation course"].unique().tolist()))
 
-with col_right:
-    math_score    = st.slider("Math Score:", 0, 100, 70)
+with c2:
+    race = st.selectbox("Race/Ethnicity:", sorted(df["race/ethnicity"].unique().tolist()))
+
+with c3:
+    prep = st.selectbox("Test Prep Course:", sorted(df["test preparation course"].unique().tolist()))
+
+with c4:
+    math_score = st.slider("Math Score:", 0, 100, 70)
+
+with c5:
     reading_score = st.slider("Reading Score:", 0, 100, 75)
 
 if st.button("Predict Writing Score 🚀", use_container_width=True):
@@ -90,6 +97,6 @@ if st.button("Predict Writing Score 🚀", use_container_width=True):
     prediction = max(0, min(100, prediction))
 
     st.markdown(
-        f'<div class="result-box">Predicted Writing Score: {prediction:.1f}</div>',
+        f'<div class="result-box">Predicted Writing Score: {prediction:.1f} / 100</div>',
         unsafe_allow_html=True
     )
