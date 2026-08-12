@@ -63,8 +63,10 @@ if user_query:
         # 4. إعداد نموذج Gemini والموجه الداخلي (System Prompt)
         try:
             ai.configure(api_key=api_key)
-            model = ai.GenerativeModel("gemini-3.1-flash")
-
+            try:
+                model = ai.GenerativeModel("gemini-3.1-flash")
+            except:
+                model = ai.GenerativeModel("gemini-3.5-flash")
             system_instruction = f"""
             You are an expert AI Study Coach helping a student improve academically.
             
