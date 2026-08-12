@@ -27,6 +27,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+tab1, tab2 = st.tabs([" Student Grade Prediction", "🤖 AI Study Coach"])
+
 st.markdown("""
     <div class="hero-card">
         <h1 class="title-text">🎓 Welcome to AI Student Hub</h1>

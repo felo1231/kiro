@@ -16,74 +16,74 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+with tap2:
+    with st.sidebar:
+        st.subheader('Learning Style:')
+        learning_style = st.selectbox("", ["Visual", "Hands-on", "Reading/Writing", "Auditory"], label_visibility="collapsed")
 
-with st.sidebar:
-    st.subheader('Learning Style:')
-    learning_style = st.selectbox("", ["Visual", "Hands-on", "Reading/Writing", "Auditory"], label_visibility="collapsed")
+        st.divider()
+        st.subheader('Response Details:')
+        detail_level = st.select_slider(
+            "", options=["Brief", "Medium-detailed", "Very detailed"], value="Medium-detailed",
+            label_visibility="collapsed"
+        )
 
-    st.divider()
-    st.subheader('Response Details:')
-    detail_level = st.select_slider(
-        "", options=["Brief", "Medium-detailed", "Very detailed"], value="Medium-detailed",
-        label_visibility="collapsed"
-    )
+        st.divider()
+        st.subheader('Student Level:')
+        student_level = st.radio("", ["Beginner", "Intermediate", "Advanced"], label_visibility="collapsed")
 
-    st.divider()
-    st.subheader('Student Level:')
-    student_level = st.radio("", ["Beginner", "Intermediate", "Advanced"], label_visibility="collapsed")
+        st.divider()
+        api_key = st.text_input("Enter Gemini API Key:", type="password")
 
-    st.divider()
-    api_key = st.text_input("Enter Gemini API Key:", type="password")
+    st.markdown('<div class="chat-header">🤖 AI Study Coach</div>', unsafe_allow_html=True)
+    st.caption("Ask me anything about studying...")
 
-st.markdown('<div class="chat-header">🤖 AI Study Coach</div>', unsafe_allow_html=True)
-st.caption("Ask me anything about studying...")
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
 
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.write(msg["content"])
+    user_query = st.chat_input("Ask me anything about studying...")
 
-user_query = st.chat_input("Ask me anything about studying...")
+    if user_query:
+        if not api_key:
+            st.warning("⚠️ Please enter your Gemini API Key in the sidebar to proceed.")
+        else:
+            st.session_state.messages.append({"role": "user", "content": user_query})
+            with st.chat_message("user"):
+                st.write(user_query)
 
-if user_query:
-    if not api_key:
-        st.warning("⚠️ Please enter your Gemini API Key in the sidebar to proceed.")
-    else:
-        st.session_state.messages.append({"role": "user", "content": user_query})
-        with st.chat_message("user"):
-            st.write(user_query)
+            try:
+                ai.configure(api_key=api_key)
+                model = ai.GenerativeModel("gemini-1.5-flash")
 
-        try:
-            ai.configure(api_key=api_key)
-            model = ai.GenerativeModel("gemini-1.5-flash")
+                system_instruction = f"""
+                You are an expert AI Study Coach helping a student improve academically.
+                
+                Strict Rule:
+                You MUST ONLY answer questions related to education, studying, learning strategies, and academic advice.
+                If the question is unrelated to education, strictly reply with ONLY:
+                "Sorry, I cannot assist you with this, I only can help you with questions related to education!"
 
-            system_instruction = f"""
-            You are an expert AI Study Coach helping a student improve academically.
-            
-            Strict Rule:
-            You MUST ONLY answer questions related to education, studying, learning strategies, and academic advice.
-            If the question is unrelated to education, strictly reply with ONLY:
-            "Sorry, I cannot assist you with this, I only can help you with questions related to education!"
+                Student Persona:
+                - Preferred Learning Style: {learning_style}
+                - Response Detail Level: {detail_level}
+                - Student Expertise Level: {student_level}
 
-            Student Persona:
-            - Preferred Learning Style: {learning_style}
-            - Response Detail Level: {detail_level}
-            - Student Expertise Level: {student_level}
+                Tailor your tone, examples, and recommendations directly to match this student's profile.
+                """
 
-            Tailor your tone, examples, and recommendations directly to match this student's profile.
-            """
+                prompt = f"{system_instruction}\n\nStudent Question: {user_query}"
 
-            prompt = f"{system_instruction}\n\nStudent Question: {user_query}"
+                with st.chat_message("assistant"):
+                    with st.spinner("Thinking..."):
+                        response = model.generate_content(prompt)
+                        bot_reply = response.text
+                        st.write(bot_reply)
 
-            with st.chat_message("assistant"):
-                with st.spinner("Thinking..."):
-                    response = model.generate_content(prompt)
-                    bot_reply = response.text
-                    st.write(bot_reply)
+                st.session_state.messages.append({"role": "assistant", "content": bot_reply})
 
-            st.session_state.messages.append({"role": "assistant", "content": bot_reply})
-
-        except Exception as e:
-            st.error(f"Error connecting to Gemini API: {e}")
+            except Exception as e:
+                st.error(f"Error connecting to Gemini API: {e}")
