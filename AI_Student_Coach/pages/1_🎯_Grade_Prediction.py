@@ -9,31 +9,6 @@ from pathlib import Path
 
 st.set_page_config(page_title="Grade Prediction", page_icon="🎯", layout="wide")
 
-st.markdown("""
-    <style>
-    .stApp {
-        background: radial-gradient(circle at 20% 30%, #1e1b4b 0%, #0f172a 80%);
-    }
-    .app-title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 20px;
-    }
-    .result-box {
-        background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
-        padding: 20px;
-        border-radius: 12px;
-        font-size: 1.4rem;
-        font-weight: 700;
-        text-align: center;
-        color: white;
-        margin-top: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 @st.cache_resource
 def load_model():
     # تحديد مسار الملف بدقة سواء كان داخل المجلد الرئيسي أو بجانب مجلد pages
@@ -65,7 +40,7 @@ def load_model():
     model.fit(X_train, y_train)
 
     return model, le_gender, le_race, le_prep, df
-    
+
 model, le_gender, le_race, le_prep, df = load_model()
 
 st.markdown('<div class="app-title">🏆 Writing Score Prediction</div>', unsafe_allow_html=True)
