@@ -64,9 +64,9 @@ if user_query:
         try:
             ai.configure(api_key=api_key)
             try:
-                model = ai.GenerativeModel("gemini-3.1-flash")
-            except:
                 model = ai.GenerativeModel("gemini-3.5-flash")
+            except:
+                model = ai.GenerativeModel("gemini-3.1-flash")
             system_instruction = f"""
             You are an expert AI Study Coach helping a student improve academically.
             
