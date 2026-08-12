@@ -1,13 +1,13 @@
-import streamlit as st
-import pandas as pd
+import os
+from pathlib import Path
 import numpy as np
+import pandas as pd
+import streamlit as st
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-import os
-from pathlib import Path
 
-st.set_page_config(page_title="Grade Prediction", page_icon="🎯", layout="centered")
+st.set_page_config(page_title="Grade Prediction", page_icon="🎯", layout="wide")
 
 st.markdown("""
     <style>
@@ -16,12 +16,12 @@ st.markdown("""
     }
     .app-title {
         font-size: 2.2rem;
-        font-weight: 700;
+        font-weight: 800;
         color: #ffffff;
         margin-bottom: 20px;
     }
     .result-box {
-        background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+        background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
         padding: 20px;
         border-radius: 12px;
         font-size: 1.4rem;
@@ -29,22 +29,21 @@ st.markdown("""
         text-align: center;
         color: white;
         margin-top: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
     }
     </style>
 """, unsafe_allow_html=True)
 
 @st.cache_resource
 def load_model():
-    # تحديد مسار الملف بدقة سواء كان داخل المجلد الرئيسي أو بجانب مجلد pages
-    current_dir = Path(__file__).resolve().parent  # مجلد pages
-    parent_dir = current_dir.parent                # المجلد الرئيسي للبروجكت
+    current_dir = Path(__file__).resolve().parent
+    csv_path = current_dir.parent / "StudentsPerformance.csv"
     
-    # البحث عن الملف في المجلد الرئيسي أو الحالي
-    csv_path = parent_dir / "StudentsPerformance.csv"
     if not csv_path.exists():
         csv_path = current_dir / "StudentsPerformance.csv"
-        
+    if not csv_path.exists():
+        csv_path = Path("StudentsPerformance.csv")
+
     df = pd.read_csv(csv_path)
     df.drop(columns=["parental level of education", "lunch"], inplace=True)
 
@@ -65,7 +64,7 @@ def load_model():
     model.fit(X_train, y_train)
 
     return model, le_gender, le_race, le_prep, df
-    
+
 model, le_gender, le_race, le_prep, df = load_model()
 
 st.markdown('<div class="app-title">🏆 Writing Score Prediction</div>', unsafe_allow_html=True)

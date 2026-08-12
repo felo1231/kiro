@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as ai
 
-st.set_page_config(page_title="AI Study Coach", page_icon="🤖", layout="centered")
+st.set_page_config(page_title="AI Study Coach", page_icon="🤖", layout="wide")
 
 st.markdown("""
     <style>
@@ -17,7 +17,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 1. القائمة الجانبية للتخصيص
 with st.sidebar:
     st.subheader('Learning Style:')
     learning_style = st.selectbox("", ["Visual", "Hands-on", "Reading/Writing", "Auditory"], label_visibility="collapsed")
@@ -37,45 +36,38 @@ with st.sidebar:
     api_key = st.text_input("Enter Gemini API Key:", type="password")
 
 st.markdown('<div class="chat-header">🤖 AI Study Coach</div>', unsafe_allow_html=True)
-st.caption("Ask me anything about studying and learning strategies!")
+st.caption("Ask me anything about studying...")
 
-# 2. تهيئة سجل المحادثات
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# عرض المحادثات السابقة
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# 3. استقبال المدخلات من الطالب
 user_query = st.chat_input("Ask me anything about studying...")
 
 if user_query:
     if not api_key:
         st.warning("⚠️ Please enter your Gemini API Key in the sidebar to proceed.")
     else:
-        # إضافة سؤال المستخدم للواجهة والسجل
         st.session_state.messages.append({"role": "user", "content": user_query})
         with st.chat_message("user"):
             st.write(user_query)
 
-        # 4. إعداد نموذج Gemini والموجه الداخلي (System Prompt)
         try:
             ai.configure(api_key=api_key)
-            try:
-                model = ai.GenerativeModel("gemini-3.5-flash")
-            except:
-                model = ai.GenerativeModel("gemini-3.1-flash")
+            model = ai.GenerativeModel("gemini-1.5-flash")
+
             system_instruction = f"""
             You are an expert AI Study Coach helping a student improve academically.
             
             Strict Rule:
             You MUST ONLY answer questions related to education, studying, learning strategies, and academic advice.
-            If the question is unrelated to education (e.g., sports, movies, cooking, casual chat, general trivia), strictly reply with ONLY:
+            If the question is unrelated to education, strictly reply with ONLY:
             "Sorry, I cannot assist you with this, I only can help you with questions related to education!"
 
-            Student Persona & Customizations:
+            Student Persona:
             - Preferred Learning Style: {learning_style}
             - Response Detail Level: {detail_level}
             - Student Expertise Level: {student_level}
