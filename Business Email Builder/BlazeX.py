@@ -97,7 +97,7 @@ with col2:
         options=[f"{info[1]} {name}" for name, info in departments.items()]
     )
 
-# --- ميزة إضافية 1: شريط نسبة اكتمال البيانات (Live Validation) ---
+# --- شريط نسبة اكتمال البيانات (Live Validation) ---
 valid_first = bool(first_name.strip())
 valid_last = bool(last_name.strip())
 valid_phone = phone_number.isdigit() and len(phone_number) == 11
@@ -133,25 +133,23 @@ if st.button("🔥 Generate Business Email"):
             "Generated Email": email
         })
 
-        # تأثيرات ممتعة
         st.balloons()
         
-        # عرض النتيجة المظبوطة بالميلي
+        # عرض النتيجة
         st.success("Business email generated successfully!")
         st.markdown("### 📧 Your Business Email:")
         
-        # عرض البريد ككود لتمكين زِر النسخ إلى الحافظة (Bonus Part)
-        st.code(email, language="")
+        # تفعيل التلوين التلقائي للأرقام كما في الصورة
+        st.code(email, language="python")
     else:
         st.error("Please fill all fields correctly:\n- Names cannot be empty.\n- Phone number must contain exactly 11 digits.")
 
-# --- ميزة إضافية 2: سجل الإيميلات المنشأة + تنزيل كملف CSV ---
+# --- سجل الإيميلات المنشأة + تنزيل كملف CSV ---
 if st.session_state.created_emails:
     st.divider()
     st.markdown("### 📊 Session Created Emails Log")
     df_emails = pd.DataFrame(st.session_state.created_emails)
     
-    # التعديل هنا: استخدام use_container_width بدلاً من use_container_state
     st.dataframe(df_emails, use_container_width=True)
     
     csv_data = df_emails.to_csv(index=False).encode('utf-8')
