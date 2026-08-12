@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as ai
 
-st.set_page_config(page_title="AI Study Coach", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="AI Study Coach", page_icon="🤖", layout="centered")
 
 st.markdown("""
     <style>

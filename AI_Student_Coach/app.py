@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="AI Student Hub", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="AI Student Hub", page_icon="🎓", layout="centered")
 
 # تصميم الخلفية والتأثيرات الزجاجية
 st.markdown("""
